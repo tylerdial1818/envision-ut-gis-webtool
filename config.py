@@ -64,3 +64,10 @@ OA_CACHE = f"{CACHE_DIR}/opportunity_atlas.csv"
 COUNTY_GEOJSON_CACHE = f"{CACHE_DIR}/utah_counties.geojson"
 ENRICHED_OUTPUT = f"{CACHE_DIR}/block_groups_enriched.csv"
 COUNTY_LOOKUP = f"{REFERENCE_DIR}/county_fips_lookup.csv"
+
+# --- Opportunity Atlas ---
+OA_COLOR_SCALE = ['#d73027', '#fc8d59', '#fee08b', '#d9ef8b', '#91cf60', '#1a9850']
+OA_FILL_OPACITY = 0.35
+OA_LINE_OPACITY = 0.1
+TRACT_SHAPEFILE_URL = "https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_49_tract_500k.zip"
+TRACT_CACHE_DIR = f"{CACHE_DIR}/utah_tracts"

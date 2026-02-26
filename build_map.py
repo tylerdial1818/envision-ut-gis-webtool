@@ -1,6 +1,6 @@
 """
 Utah Building Trends Explorer — Build Script
-Phase 2: Full map generation with building trends layer and branding.
+Phase 3: Full map with building trends, OA overlay, and branding.
 """
 import logging
 import os
@@ -21,6 +21,7 @@ from utils.census_api import (
 from utils.data_prep import build_enriched_dataset, build_county_lookup
 from layers.building_trends import build_building_trends_layer
 from layers.county_boundaries import build_county_boundaries_layer
+from layers.opportunity_atlas import build_opportunity_atlas_layer
 from utils.branding import (
     build_title_bar,
     build_legend,
@@ -90,12 +91,9 @@ def main():
         count = len(enriched_df[enriched_df["tier_label"] == tier["label"]])
         logger.info(f"  {tier['label']}: {count} block groups")
 
-    logger.info("Phase 1 complete. Data ready for map generation.")
+    logger.info("Data pipeline complete. Building map...")
 
-    # === Map Generation (Phase 2) ===
-    logger.info("Building map...")
-
-    # Initialize map
+    # === Map Generation ===
     m = folium.Map(
         location=config.DEFAULT_CENTER,
         zoom_start=config.DEFAULT_ZOOM,
@@ -103,11 +101,26 @@ def main():
         prefer_canvas=True,
     )
 
-    # Add county boundaries (bottom layer — geographic context)
+    # Layer z-order: county boundaries (bottom) → OA polygons → building trends (top)
+
+    # 1. County boundaries (bottom layer — geographic context)
     county_layer = build_county_boundaries_layer(config.COUNTY_GEOJSON_CACHE)
     county_layer.add_to(m)
 
-    # Add building trends markers (main layer)
+    # 2. Opportunity Atlas overlay (middle — background data layer)
+    logger.info("Building Opportunity Atlas overlay...")
+    try:
+        oa_layer, oa_colormap = build_opportunity_atlas_layer(
+            enriched_df=enriched_df,
+        )
+        oa_layer.add_to(m)
+        if oa_colormap:
+            m.add_child(oa_colormap)
+        logger.info("Opportunity Atlas overlay added")
+    except Exception as e:
+        logger.warning(f"Could not build Opportunity Atlas overlay: {e}")
+
+    # 3. Building trends markers (top layer — primary data)
     building_layer = build_building_trends_layer(
         df=enriched_df,
         state_avg=state_avg,
@@ -118,10 +131,10 @@ def main():
     )
     building_layer.add_to(m)
 
-    # Add layer control (for toggling layers)
+    # 4. Layer control (for toggling all three layers)
     folium.LayerControl(collapsed=False).add_to(m)
 
-    # Inject popup CSS and branding elements
+    # 5. Inject popup CSS and branding elements
     m.get_root().html.add_child(build_popup_styles())
     m.get_root().html.add_child(build_title_bar())
     m.get_root().html.add_child(build_legend(config.GROWTH_TIERS))
@@ -137,7 +150,7 @@ def main():
 
     file_size_mb = os.path.getsize(output_path) / (1024 * 1024)
     logger.info(f"Map saved to {output_path} ({file_size_mb:.1f} MB)")
-    logger.info("Phase 2 complete. Open the HTML file in a browser to review.")
+    logger.info("Build complete. Open the HTML file in a browser to review.")
 
 
 if __name__ == "__main__":

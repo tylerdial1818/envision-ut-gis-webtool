@@ -373,3 +373,41 @@ def load_county_boundaries(cache_path: str, state_fips: str = "49") -> dict:
     logger.info(f"Cached county boundaries to {cache_path}")
 
     return utah_geojson
+
+
+def load_tract_boundaries(cache_dir: str, state_fips: str = "49") -> str:
+    """
+    Download Utah tract shapefile from Census TIGER and return the
+    path to the extracted .shp file.
+
+    Source: https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_49_tract_500k.zip
+    """
+    shp_dir = os.path.join(cache_dir, "utah_tracts")
+    # Look for an existing .shp file
+    if os.path.exists(shp_dir):
+        shp_files = [f for f in os.listdir(shp_dir) if f.endswith(".shp")]
+        if shp_files:
+            shp_path = os.path.join(shp_dir, shp_files[0])
+            logger.info(f"Using cached tract shapefile at {shp_path}")
+            return shp_path
+
+    url = f"https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_{state_fips}_tract_500k.zip"
+    logger.info(f"Downloading tract boundaries from {url}...")
+
+    try:
+        resp = requests.get(url, timeout=120)
+        resp.raise_for_status()
+    except requests.RequestException as e:
+        raise ValueError(f"Failed to download tract boundaries from {url}: {e}")
+
+    os.makedirs(shp_dir, exist_ok=True)
+    with zipfile.ZipFile(io.BytesIO(resp.content)) as zf:
+        zf.extractall(shp_dir)
+
+    shp_files = [f for f in os.listdir(shp_dir) if f.endswith(".shp")]
+    if not shp_files:
+        raise ValueError(f"No .shp file found in {shp_dir} after extraction")
+
+    shp_path = os.path.join(shp_dir, shp_files[0])
+    logger.info(f"Extracted tract shapefile to {shp_path}")
+    return shp_path
