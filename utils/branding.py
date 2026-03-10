@@ -150,7 +150,7 @@ def build_reset_view_button(center: list, zoom: int) -> folium.Element:
         }});
         if (maps.length > 0) maps[0].setView([{lat}, {lon}], {zoom});
     " style="
-        position:fixed; top:176px; right:10px; z-index:1000;
+        position:fixed; bottom:16px; left:50%; transform:translateX(-50%); z-index:1000;
         background:rgba(255,255,255,0.95); border:1px solid rgba(0,0,0,0.08);
         border-radius:8px;
         padding:8px 14px; cursor:pointer;
@@ -391,11 +391,8 @@ def build_mobile_styles() -> folium.Element:
             font-size: 13px !important;
         }
 
-        /* --- Reset button: bigger touch target, repositioned --- */
+        /* --- Reset button: bigger touch target on mobile --- */
         #reset-view-btn {
-            top: auto !important;
-            bottom: 16px !important;
-            right: 8px !important;
             padding: 10px 14px !important;
             font-size: 13px !important;
         }
