@@ -9,15 +9,16 @@ import math
 # to keep per-marker HTML small.
 POPUP_CSS = """
 <style>
-.bt-p{font-family:Arial,sans-serif;width:280px;font-size:13px;line-height:1.5;margin:0;padding:0}
-.bt-h{color:#fff;padding:8px 12px;border-radius:6px 6px 0 0;font-size:11px;font-weight:bold;letter-spacing:.5px;text-transform:uppercase}
-.bt-b{padding:10px 12px}
-.bt-sl{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.bt-d{border-top:1px solid #eee;margin:8px 0}
-.bt-v{font-size:12px;line-height:1.6}
-.bt-m{color:#888;font-size:11px}
-.bt-bar{background:#eee;height:8px;border-radius:3px;margin-bottom:4px}
-.bt-tt{font-family:Arial,sans-serif;font-size:12px;padding:4px 8px;max-width:200px;line-height:1.4}
+.bt-p{font-family:'Inter',system-ui,-apple-system,sans-serif;width:280px;font-size:13px;line-height:1.5;margin:0;padding:0}
+.bt-h{color:#fff;padding:10px 14px;border-radius:8px 8px 0 0;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.bt-b{padding:12px 14px}
+.bt-sl{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;font-weight:500}
+.bt-d{border-top:1px solid #f1f5f9;margin:10px 0}
+.bt-v{font-size:12px;line-height:1.7;color:#334155}
+.bt-m{color:#94a3b8;font-size:11px}
+.bt-bar{background:#f1f5f9;height:6px;border-radius:3px;margin-bottom:4px}
+.bt-tt{font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:12px;padding:6px 10px;max-width:200px;line-height:1.5}
+path.leaflet-interactive{pointer-events:visiblePainted !important;cursor:pointer}
 </style>
 """
 

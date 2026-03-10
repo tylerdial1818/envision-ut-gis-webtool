@@ -39,8 +39,8 @@ def build_building_trends_layer(
         total_units = row.get("total_housing_units", 0) or 0
         county_name = row.get("county_name", "Unknown")
 
-        # Radius: log-scaled by total housing units
-        radius = max(min_radius, min(max_radius, math.log1p(total_units) * 1.5))
+        # Radius: sqrt-scaled by total housing units for wider perceptual spread
+        radius = min_radius + (max_radius - min_radius) * min(1.0, math.sqrt(total_units) / math.sqrt(3000))
 
         tooltip_html = build_tooltip_html(row.to_dict(), county_name)
         popup_html = build_popup_html(row.to_dict(), county_name, state_avg)
@@ -48,11 +48,11 @@ def build_building_trends_layer(
         folium.CircleMarker(
             location=[lat, lon],
             radius=radius,
-            color=tier_color,
-            weight=0.5,
+            color="#ffffff",
+            weight=1.5,
             fill=True,
             fill_color=tier_color,
-            fill_opacity=0.7,
+            fill_opacity=0.85,
             tooltip=folium.Tooltip(tooltip_html),
             popup=folium.Popup(popup_html, max_width=320),
         ).add_to(fg)

@@ -28,6 +28,12 @@ from utils.branding import (
     build_attribution,
     build_reset_view_button,
     build_popup_styles,
+    build_zoom_control_mover,
+    build_zoom_radius_scaler,
+    build_onboarding_modal,
+    build_faq_button,
+    build_popup_autopan,
+    build_mobile_styles,
 )
 import config
 
@@ -98,7 +104,7 @@ def main():
         location=config.DEFAULT_CENTER,
         zoom_start=config.DEFAULT_ZOOM,
         tiles=config.TILE_PROVIDER,
-        prefer_canvas=True,
+        prefer_canvas=False,
     )
 
     # Layer z-order: county boundaries (bottom) → OA polygons → building trends (top)
@@ -134,7 +140,8 @@ def main():
     # 4. Layer control (for toggling all three layers)
     folium.LayerControl(collapsed=False).add_to(m)
 
-    # 5. Inject popup CSS and branding elements
+    # 5. Inject popup CSS, autopan, and branding elements
+    m.get_root().html.add_child(build_popup_autopan())
     m.get_root().html.add_child(build_popup_styles())
     m.get_root().html.add_child(build_title_bar())
     m.get_root().html.add_child(build_legend(config.GROWTH_TIERS))
@@ -142,6 +149,16 @@ def main():
     m.get_root().html.add_child(
         build_reset_view_button(config.DEFAULT_CENTER, config.DEFAULT_ZOOM)
     )
+    m.get_root().html.add_child(build_zoom_control_mover())
+    m.get_root().html.add_child(build_zoom_radius_scaler(
+        scale_min=config.ZOOM_SCALE_MIN,
+        scale_max=config.ZOOM_SCALE_MAX,
+        zoom_low=config.ZOOM_BREAKPOINT_LOW,
+        zoom_high=config.ZOOM_BREAKPOINT_HIGH,
+    ))
+    m.get_root().html.add_child(build_faq_button())
+    m.get_root().html.add_child(build_onboarding_modal())
+    m.get_root().html.add_child(build_mobile_styles())
 
     # Save
     os.makedirs(config.OUTPUT_DIR, exist_ok=True)

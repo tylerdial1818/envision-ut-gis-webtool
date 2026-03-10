@@ -52,7 +52,7 @@ def test_html_contains_tier_colors(html_content):
 
 def test_html_contains_branding(html_content):
     """HTML should contain SOCIO attribution and title bar."""
-    assert "SOCIO" in html_content
+    assert "socio-analytics.com" in html_content
     assert "BUILDING TRENDS" in html_content.upper()
     assert "ACS 2023" in html_content or "ACS" in html_content
 

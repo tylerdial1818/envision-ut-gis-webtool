@@ -142,7 +142,9 @@ def build_opportunity_atlas_layer(
     )
     geojson_layer.add_to(fg)
 
-    # Position the colormap legend
-    colormap.add_to(fg)
+    # NOTE: Do NOT add branca colormap to the feature group.
+    # When show=False, the d3 colormap JS tries to select a DOM element
+    # (.legend.leaflet-control) that doesn't exist yet, causing a JS crash
+    # that prevents all subsequent layers (circle markers) from rendering.
 
-    return fg, None  # colormap is added directly to fg
+    return fg, None

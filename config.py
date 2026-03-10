@@ -38,8 +38,8 @@ ACS_VARIABLES = {
 # --- Growth Tier Classification ---
 # Tiers based on % of housing stock built since 2020
 GROWTH_TIERS = [
-    {"label": "Minimal new construction", "min": 0.00, "max": 0.01, "color": "#D9D9D9"},
-    {"label": "Some new construction",    "min": 0.01, "max": 0.03, "color": "#A6BDDB"},
+    {"label": "Minimal new construction", "min": 0.00, "max": 0.01, "color": "#B0B8C4"},
+    {"label": "Some new construction",    "min": 0.01, "max": 0.03, "color": "#7EB4D8"},
     {"label": "Moderate growth",          "min": 0.03, "max": 0.07, "color": "#3690C0"},
     {"label": "High growth",              "min": 0.07, "max": 0.15, "color": "#0570B0"},
     {"label": "Construction hotspot",     "min": 0.15, "max": 1.00, "color": "#034E7B"},
@@ -51,8 +51,8 @@ DEFAULT_ZOOM = 10
 TILE_PROVIDER = "cartodbpositron"
 
 # --- Marker Sizing ---
-MARKER_MIN_RADIUS = 3
-MARKER_MAX_RADIUS = 15
+MARKER_MIN_RADIUS = 2
+MARKER_MAX_RADIUS = 18
 
 # --- File Paths ---
 CACHE_DIR = "data/cache"
@@ -67,7 +67,13 @@ COUNTY_LOOKUP = f"{REFERENCE_DIR}/county_fips_lookup.csv"
 
 # --- Opportunity Atlas ---
 OA_COLOR_SCALE = ['#d73027', '#fc8d59', '#fee08b', '#d9ef8b', '#91cf60', '#1a9850']
-OA_FILL_OPACITY = 0.35
+OA_FILL_OPACITY = 0.20
 OA_LINE_OPACITY = 0.1
 TRACT_SHAPEFILE_URL = "https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_49_tract_500k.zip"
 TRACT_CACHE_DIR = f"{CACHE_DIR}/utah_tracts"
+
+# --- Zoom-Responsive Marker Scaling ---
+ZOOM_SCALE_MIN = 0.15       # radius multiplier at lowest zoom
+ZOOM_SCALE_MAX = 1.4        # radius multiplier at highest zoom
+ZOOM_BREAKPOINT_LOW = 8     # zoom level where scaling starts
+ZOOM_BREAKPOINT_HIGH = 14   # zoom level where scaling maxes out

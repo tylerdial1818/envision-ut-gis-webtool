@@ -72,4 +72,4 @@ the existing file on your server — no other changes needed.
 
 ## Questions?
 
-Contact Tyler Dial at Socio.
+Contact Tyler Dial at Socio. tyler@socio-analytics.com
