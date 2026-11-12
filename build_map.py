@@ -42,7 +42,25 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 logger = logging.getLogger(__name__)
 
 
+CARTO_ATTRIBUTION = (
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors '
+    '&copy; <a href="https://carto.com/attributions">CARTO</a>'
+)
+
+
+def get_carto_key() -> str:
+    """Return the CARTO API key from the environment, or exit with a clear error."""
+    key = os.environ.get("CARTO_API_KEY", "").strip()
+    if not key:
+        sys.exit(
+            "ERROR: CARTO_API_KEY is not set. CARTO basemap tiles require an API key.\n"
+            "Run: CARTO_API_KEY=<your key> python build_map.py"
+        )
+    return key
+
+
 def main():
+    carto_key = get_carto_key()
     logger.info("=== Utah Building Trends Explorer — Data Pipeline ===")
 
     # 1. Fetch ACS data from Census API
@@ -104,7 +122,13 @@ def main():
     m = folium.Map(
         location=config.DEFAULT_CENTER,
         zoom_start=config.DEFAULT_ZOOM,
-        tiles=config.TILE_PROVIDER,
+        tiles=folium.TileLayer(
+            tiles=f"https://{{s}}.basemaps.cartocdn.com/light_all/{{z}}/{{x}}/{{y}}{{r}}.png?key={carto_key}",
+            attr=CARTO_ATTRIBUTION,
+            name="cartodbpositron",
+            max_zoom=20,
+            subdomains="abcd",
+        ),
         prefer_canvas=False,
     )
 
