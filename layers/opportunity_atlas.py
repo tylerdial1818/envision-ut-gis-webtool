@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 def build_opportunity_atlas_layer(
     enriched_df: pd.DataFrame,
     tract_geojson_path: str | None = None,
-) -> tuple[folium.FeatureGroup, folium.Element | None]:
+) -> tuple[folium.FeatureGroup, folium.Element | None, tuple[float, float]]:
     """
     Build Opportunity Atlas overlay as tract-level colored polygons.
 
@@ -133,12 +133,7 @@ def build_opportunity_atlas_layer(
     geojson_layer = folium.GeoJson(
         geojson_data,
         style_function=style_function,
-        tooltip=folium.GeoJsonTooltip(
-            fields=["mobility_score"],
-            aliases=["Mobility Score:"],
-            style="font-family:Arial,sans-serif;font-size:12px;",
-            localize=True,
-        ),
+        interactive=False,
     )
     geojson_layer.add_to(fg)
 
@@ -146,5 +141,6 @@ def build_opportunity_atlas_layer(
     # When show=False, the d3 colormap JS tries to select a DOM element
     # (.legend.leaflet-control) that doesn't exist yet, causing a JS crash
     # that prevents all subsequent layers (circle markers) from rendering.
+    # Instead, we return vmin/vmax so a custom HTML legend can be built.
 
-    return fg, None
+    return fg, None, (vmin, vmax)

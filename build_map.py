@@ -25,6 +25,7 @@ from layers.opportunity_atlas import build_opportunity_atlas_layer
 from utils.branding import (
     build_title_bar,
     build_legend,
+    build_oa_legend,
     build_attribution,
     build_reset_view_button,
     build_popup_styles,
@@ -115,8 +116,9 @@ def main():
 
     # 2. Opportunity Atlas overlay (middle — background data layer)
     logger.info("Building Opportunity Atlas overlay...")
+    oa_score_range = None
     try:
-        oa_layer, oa_colormap = build_opportunity_atlas_layer(
+        oa_layer, oa_colormap, oa_score_range = build_opportunity_atlas_layer(
             enriched_df=enriched_df,
         )
         oa_layer.add_to(m)
@@ -156,6 +158,12 @@ def main():
         zoom_low=config.ZOOM_BREAKPOINT_LOW,
         zoom_high=config.ZOOM_BREAKPOINT_HIGH,
     ))
+    if oa_score_range:
+        m.get_root().html.add_child(build_oa_legend(
+            colors=config.OA_COLOR_SCALE,
+            vmin=oa_score_range[0],
+            vmax=oa_score_range[1],
+        ))
     m.get_root().html.add_child(build_faq_button())
     m.get_root().html.add_child(build_onboarding_modal())
     m.get_root().html.add_child(build_mobile_styles())

@@ -120,6 +120,79 @@ def build_legend(tiers: list[dict]) -> folium.Element:
     return folium.Element(html)
 
 
+def build_oa_legend(
+    colors: list[str],
+    vmin: float,
+    vmax: float,
+    layer_name: str = "Upward Mobility (Opportunity Atlas)",
+) -> folium.Element:
+    """OA mobility score legend — hidden by default, shown when the OA layer is toggled on."""
+    gradient_stops = ", ".join(
+        f"{c} {i * 100 / (len(colors) - 1):.0f}%"
+        for i, c in enumerate(colors)
+    )
+    html = f'''
+    <div id="oa-legend" style="
+        position:fixed; bottom:30px; left:10px; z-index:999;
+        background:rgba(255,255,255,0.97); padding:14px 18px; border-radius:10px;
+        box-shadow:0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05);
+        border:1px solid rgba(0,0,0,0.06);
+        font-family:'Inter',system-ui,-apple-system,sans-serif;
+        line-height:1.5; max-width:280px;
+        backdrop-filter:blur(8px);
+        -webkit-backdrop-filter:blur(8px);
+        display:none;
+    ">
+        <div style="font-weight:600;margin-bottom:8px;font-size:13px;color:#1a1a2e">
+            Upward Mobility Score
+        </div>
+        <div style="
+            height:12px; border-radius:4px;
+            background:linear-gradient(to right, {gradient_stops});
+            box-shadow:0 0 0 1px rgba(0,0,0,0.08);
+        "></div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:#64748b">
+            <span>{vmin:.2f} (lower)</span>
+            <span>{vmax:.2f} (higher)</span>
+        </div>
+        <div style="color:#94a3b8;font-size:11px;margin-top:8px;padding-top:8px;border-top:1px solid #f1f5f9">
+            Source: Opportunity Atlas (Harvard/Census)
+        </div>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {{
+        setTimeout(function() {{
+            var maps = Object.values(window).filter(function(v) {{
+                return v instanceof L.Map;
+            }});
+            if (maps.length === 0) return;
+            var map = maps[0];
+            var oaLegend = document.getElementById('oa-legend');
+            var btLegend = document.getElementById('legend');
+            if (!oaLegend) return;
+
+            function showOaLegend() {{
+                oaLegend.style.display = 'block';
+                if (btLegend) btLegend.style.bottom = (oaLegend.offsetHeight + 40) + 'px';
+            }}
+            function hideOaLegend() {{
+                oaLegend.style.display = 'none';
+                if (btLegend) btLegend.style.bottom = '30px';
+            }}
+
+            map.on('overlayadd', function(e) {{
+                if (e.name === '{layer_name}') showOaLegend();
+            }});
+            map.on('overlayremove', function(e) {{
+                if (e.name === '{layer_name}') hideOaLegend();
+            }});
+        }}, 500);
+    }});
+    </script>
+    '''
+    return folium.Element(html)
+
+
 def build_attribution() -> folium.Element:
     """'Powered by SOCIO' badge in the bottom-right corner."""
     logo_src = f"data:image/png;base64,{SOCIO_LOGO_B64}"
@@ -397,6 +470,13 @@ def build_mobile_styles() -> folium.Element:
             font-size: 13px !important;
         }
 
+        /* --- OA Legend: match mobile legend sizing --- */
+        #oa-legend {
+            bottom: 16px !important;
+            left: 8px !important;
+            max-width: 240px !important;
+        }
+
         /* --- Legend: collapsed by default, tap to expand --- */
         #legend {
             bottom: 16px !important;
@@ -565,12 +645,18 @@ def build_faq_button() -> folium.Element:
                     View the source dataset (Table B25034)</a>.
             </div>
 
-            <div style="margin-bottom:8px">
+            <div style="margin-bottom:18px">
                 <div style="font-weight:600;color:#1a1a2e;margin-bottom:4px">What is the Opportunity Atlas layer?</div>
                 The Opportunity Atlas overlay shows <b>upward economic mobility scores</b> by census tract,
                 based on research from Harvard University and the U.S. Census Bureau.
                 <a href="https://opportunityinsights.org/paper/the-opportunity-atlas/" target="_blank"
                    rel="noopener" style="color:#0570B0">Learn more at Opportunity Insights</a>.
+            </div>
+
+            <div style="margin-bottom:8px;font-size:13px;color:#64748b;padding-top:12px;border-top:1px solid #f1f5f9">
+                Want to learn more about the data or other webtools? Email
+                <a href="mailto:tyler@socio-analytics.com" style="color:#0570B0">tyler@socio-analytics.com</a>
+                for additional info.
             </div>
         </div>
     </div>
